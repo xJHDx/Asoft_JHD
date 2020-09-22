@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+
 const routes: Routes = [
-  { path: '', redirectTo: '/auth', pathMatch: 'full' },
-  { path: 'auth', loadChildren: () => import('../app/componentes/auth/auth.module').then(m => m.AuthModule) }
+  { path: '', redirectTo: '/navegacion', pathMatch: 'full' },
+  { path: 'navegacion', loadChildren: () => import('../app/componentes/auth/auth.module').then(m => m.AuthModule) }
 ];
 
 @NgModule({

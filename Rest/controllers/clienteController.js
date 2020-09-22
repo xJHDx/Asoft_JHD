@@ -1,63 +1,83 @@
-const Cliente = require("../models/cliente");
+const mysql = require('mysql');
 
+// MySql 
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'mydb'
+});
 
-// Cuando se crea un nuevo cliente. 
-exports.nuevoCliente = async (req, res, next ) => {
-    // TODO : Insertar en la base de datos. 
-    // Crear objeto de paciente con datos de req.body. 
-    const cliente = new Cliente(req.body);
+/** Crear un Nuevo Cliente */
+exports.nuevoCliente = async (req, res, next) => {
+    const sql = 'INSERT INTO Cliente SET ?';
 
-    try{
-        await Cliente.save(); 
-        res.json({ mensaje : 'El cliente se Agrego Correctamente'});
-    }catch(error){
-        console.log(error);
-        next(); 
-    }     
-}
-
-/** Obtiene Todos los Cliente. */
-exports.obtenerCliente = async (req,res,next) => {
-    try {
-        const  Cliente = await Cliente.find({}); 
-        res.json( Cliente);
-    } catch (error) {
-        console.log(error); 
-        next(); 
+    const customerObj = {
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
+        dni: req.body.dni,
+        telefono: req.body.telefono,
+        email: req.body.email
     }
+
+    connection.query(sql, customerObj, error => {
+        if (error) throw error;
+        res.send('Customer Created!!');
+    })
 }
 
-/** Obtiene ID de Cliente */
-exports.obteneCliente = async (req, res, next) => {
-    try {
-        const Cliente = await Cliente.findById(req.params.id); 
-        res.json (Cliente);
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
+/** Obtiene Todos los Clientes. */
+exports.obtenerClientes = async (req, res, next) => {
+
+    const sql = 'SELECT * FROM Cliente';
+
+    connection.query(sql, (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.json(results);
+        } else {
+            res.send('Not result..');
+        }
+    })
 }
 
-/** Actualiza un Registro por su ID. Cliente */
-exports.actualizaCliente = async (req, res, next) => {
-    try {
-        const Cliente = await Cliente.findOneAndUpdate({_id : req.params.id}, req.body, {
-            new: true
+/** Obtener Cliente por ID  */
+exports.obtenerCliente = async (req, res, next) => {
+
+    const { id } = req.params;
+    const sql = `SELECT * FROM Cliente WHERE idCliente = ${id}`;
+
+    connection.query(sql, (error, result) => {
+        if (error) throw error;
+        if (result.length > 0) {
+            res.json(result);
+        } else {
+            res.send('Not result..');
+        }
+    })
+}
+
+/** Actualizar Cliente por su ID  */
+exports.actualizarCliente = async (req, res, next) => {
+    const { id } = req.params;
+        const { nombre, apellido, dni, telefono, email } = req.body;
+        const sql = `UPDATE Cliente SET nombre = '${nombre}', apellido='${apellido}', dni='${dni}', telefono='${telefono}', email='${email}' WHERE idCliente =${id}`;
+
+        connection.query(sql, error => {
+            if (error) throw error;
+            res.send('Customer UPDated!!');
+        })
+}
+
+
+/** Eliminar Cliente por ID  */
+exports.eliminarCliente = async (req, res, next) => {
+    const { id } = req.params;
+        const sql = `DELETE FROM Cliente WHERE idCliente = ${id}`
+
+        connection.query(sql, error => {
+
+            if (error) throw error;
+            res.send('Delete Customer');
         });
-        res.json (Cliente);
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
-}
-
-/** Elimina Un cliente del registro desde el ID. */
-exports.eliminaCliente = async (req, res, next) => {
-    try {
-        const eliminado = await Cliente.findOneAndDelete({_id : req.params.id})
-        res.json(eliminado, {mensaje: 'El Cliente Fue Eliminado'});
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
 }

@@ -1,58 +1,77 @@
-const Venta = require("../models/venta");
+const mysql = require('mysql');
 
+// MySql 
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'mydb'
+});
 
-exports.nuevoVenta = async (req, res, next ) => {
-  
-    const venta = new Venta(req.body);
+/** Crear un Nueva Venta */
+exports.nuevaVenta = async (req, res, next) => {
+    const sql = 'INSERT INTO venta SET ?';
 
-    try{
-        await venta.save(); 
-        res.json({ mensaje : 'El venta se Agrego Correctamente'});
-    }catch(error){
-        console.log(error);
-        next(); 
-    }     
-}
-
-
-exports.obtenerVenta = async (req,res,next) => {
-    try {
-        const venta = await Venta.find({}); 
-        res.json(venta);
-    } catch (error) {
-        console.log(error); 
-        next(); 
+    const customerObj = {
+        fecha: req.body.fecha
     }
+    connection.query(sql, customerObj, error => {
+        if (error) throw error;
+        res.send('Customer Created!!');
+    })
 }
 
+/** Obtiene Todas las Ventas. */
+exports.obtenerVentas = async (req, res, next) => {
+
+    const sql = 'SELECT * FROM venta';
+
+    connection.query(sql, (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.json(results);
+        } else {
+            res.send('Not result..');
+        }
+    })
+}
+
+/** Obtener Venta por ID  */
 exports.obtenerVenta = async (req, res, next) => {
-    try {
-        const venta = await Venta.findById(req.params.id); 
-        res.json(venta);
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
+
+    const { id } = req.params;
+    const sql = `SELECT * FROM venta WHERE idVenta = ${id}`;
+
+    connection.query(sql, (error, result) => {
+        if (error) throw error;
+        if (result.length > 0) {
+            res.json(result);
+        } else {
+            res.send('Not result..');
+        }
+    })
 }
 
-exports.Venta = async (req, res, next) => {
-    try {
-        const venta = await venta.findOneAndUpdate({_id : req.params.id}, req.body, {
-            new: true
+/** Actualizar Venta por su ID  */
+exports.actualizarVenta = async (req, res, next) => {
+    const { id } = req.params;
+        const { fecha } = req.body;
+        const sql = `UPDATE venta SET fecha = '${fecha}'`;
+
+        connection.query(sql, error => {
+            if (error) throw error;
+            res.send('Customer UPDated!!');
+        })
+}
+
+/** Eliminar Venta por ID  */
+exports.eliminarCliente = async (req, res, next) => {
+    const { id } = req.params;
+        const sql = `DELETE FROM venta WHERE idVenta = ${id}`
+
+        connection.query(sql, error => {
+
+            if (error) throw error;
+            res.send('Delete Customer');
         });
-        res.json(venta);
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
-}
-
-exports.eliminarVenta = async (req, res, next) => {
-    try {
-        const eliminado = await Venta.findOneAndDelete({_id : req.params.id})
-        res.json(eliminado, {mensaje: 'El Venta Fue Eliminado'});
-    } catch (error) {
-        console.log(error)
-        next(); 
-    }
 }

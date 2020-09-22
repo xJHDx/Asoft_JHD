@@ -1,50 +1,38 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const routes = require("./routes");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const propierties = require('./config/properties');
-const DB = require('./config/db');
+const express = require('express');
+const mysql = require('mysql');
+const bodyParser = require('body-parser');
+
+const routes = require('./routes');
 
 
-// Crear el Servidor.
+const PORT = process.env.PORT || 3050;
+
+
 const app = express();
 
-// Habilitar Cors a un solo domino.
-const whitelist = ["http://localhost:3000"];
-const corsOptions = {
-  origin: (origin, callback) => {
-    // console.log(origin);
-    const existe = whitelist.some((dominio) => dominio === origin);
-    if (existe) {
-      callback(null, true);
-    } else {
-      callback(new Error("No Permitido por CORS"));
-    }
-  },
-};
 
-// Habilitar CORS 
-//app.use(cors(corsOptions));
-app.use(cors()); 
+app.use(bodyParser.json());
 
 
-// Conectar a Mongodb
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/JPA", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
+// MySql 
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'mydb'
 });
 
-// Habilitar el body-Parser.
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // Habilitar Routing
-app.use("/", routes());
+app.use('/', routes());
 
-// Creamos Puerto y arranca el servidor.
-app.listen(3000, () => {
-  console.log("Servidor Funcionando...");
+
+// Check connect 
+connection.connect(error => {
+    if (error) throw error;
+    console.log('Database Server Running!!..');
+});
+
+
+app.listen(PORT, () => {
+    console.log(`Server Running on port ${PORT}`);
 });

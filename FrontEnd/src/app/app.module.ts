@@ -1,17 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http'
+import { FormsModule  } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NavigationComponent } from './componentes/navigation/navigation.component';
-import { CustomersListComponent } from './componentes/customers-list/customers-list.component';
+import { NavigationComponent } from './componentes/auth/navigation/navigation.component';
+import { CustomersListComponent } from './componentes/auth/customers-list/customers-list.component';
 
 
 /** Importar conecion a api service */
 import { CustomeService } from '../app/componentes/services/custome.service';
-import { SaleListComponent } from './componentes/sale-list/sale-list.component';
-import { ProductListComponent } from './componentes/product-list/product-list.component';
+import { SaleListComponent } from './componentes/auth/sale-list/sale-list.component';
+import { ProductListComponent } from './componentes/auth/product-list/product-list.component';
+import { importType } from '@angular/compiler/src/output/output_ast';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { ProductListComponent } from './componentes/product-list/product-list.co
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [
     CustomeService,

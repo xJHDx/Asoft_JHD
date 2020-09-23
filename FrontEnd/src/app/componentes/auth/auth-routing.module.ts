@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { CustomersListComponent } from '../customers-list/customers-list.component';
-import { SaleListComponent } from '../sale-list/sale-list.component'
-import { ProductListComponent } from '../product-list/product-list.component';
+import { CustomersListComponent } from '../auth/customers-list/customers-list.component';
+import { SaleListComponent } from './sale-list/sale-list.component'
+import { ProductListComponent } from '../auth/product-list/product-list.component';
 
 
 const routes: Routes = [
